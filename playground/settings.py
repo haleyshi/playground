@@ -68,6 +68,8 @@ TEMPLATES = [
     },
 ]
 
+STATIC_FILES_ROOT = BASE_DIR+"/webs/static/"
+
 WSGI_APPLICATION = 'playground.wsgi.application'
 
 
@@ -119,5 +121,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATIC_FILES_ROOT = BASE_DIR+"/webs/static/"

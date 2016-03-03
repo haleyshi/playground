@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>施塾-编程游乐场-HTML/JS/CSS</title>
+		<title>施塾-编程游乐场-{% if lang %} {{ lang }} {% endif %}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
         <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -13,6 +13,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/css/css.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/javascript/javascript.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/xml/xml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/go/go.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/python/python.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/addon/edit/closetag.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/addon/edit/closebrackets.min.js"></script>
     <!--[if lt IE 9]>
@@ -21,47 +23,43 @@
 
 		<script>
 			$(document).ready(function() {
-			    var mixedMode = {
-			        name: "htmlmixed",
-			        scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
-                                   mode: null},
-                                  {matches: /(text|application)\/(x-)?vb(a|script)/i,
-                                   mode: "vbscript"}]
-                };
+			    var langParm = "";
+
+			    {% if lang %}
+			        langParm = "{{ lang }}";
+			    {% endif %}
+
+                var editor_mode = "text/x-"+langParm.toLowerCase();
 
                 var editor = CodeMirror.fromTextArea(document.getElementById("ta_code"), {
-                                                                                        mode: mixedMode,
-                                                                                        selectionPointer: true,
+                                                                                        mode: editor_mode,
                                                                                         lineNumbers: true,
                                                                                         matchBrackets: true,
                                                                                         indentUnit: 4,
                                                                                         indentWithTabs: true
                                                                                         });
-                function runIt() {
-                    var text = editor.getValue();
-                    var patternHead = /<head[^>]*>((.|[\n\r])*)<\/head>/im
-                    var array_matches_head = patternHead.exec(text);
-
-                    var patternBody = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
-                    var array_matches_body = patternBody.exec(text);
-
-                    var ifr = document.createElement("iframe");
-                    ifr.setAttribute("frameborder", "0");
-                    ifr.setAttribute("id", "iframeResult");
-                    document.getElementById("iframewrapper").innerHTML = "";
-                    document.getElementById("iframewrapper").appendChild(ifr);
-
-                    var ifrw = (ifr.contentWindow) ? ifr.contentWindow : (ifr.contentDocument.document) ? ifr.contentDocument.document : ifr.contentDocument;
-                    ifrw.document.open();
-                    ifrw.document.write(text);
-                    ifrw.document.close();
-                }
 
 				$("#btn_run").click(function() {
-                    runIt();
-				});
+                    loadingdata = '<img src="/staticfiles/loading.gif">'
+                    $('#iframeResult').attr("srcdoc", loadingdata);
 
-				runIt();
+                    var text = editor.getValue();
+
+                    $.getJSON('/parse/', {code: text, lang: langParm})
+                      .done(function(json) {
+                          var result = json['msg'];
+                          result = result.replace(/\r\n|\r|\n/g,"<br />");
+                          var html = '<div>' + json['result'] + '</div>';
+                          html += '<div>' + result + '</div>';
+                          $('#iframeResult').attr("srcdoc", html);
+                      })
+                      .fail(function(jqxhr, textStatus, error) {
+                          var html = '<div class="alert alert-danger alert-dismissable">'
+                              + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+                              + 'load data failed: ' + textStatus + ', ' + error + '</div>';
+                          $('#iframeResult').attr("srcdoc", html);
+                      });
+				});
 			});
 		</script>
 
@@ -95,7 +93,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="row-fluid">
-                                        <label class="inline"><strong style="font-size: 16px;color: #617f10;">源代码</strong></label>
+                                        <label class="inline"><strong style="font-size: 16px;color: #617f10;">{% if lang %} {{ lang }} {% endif %} 源代码</strong></label>
                                         <button type="button" class="btn btn-default btn-xs pull-right inline" id="btn_run">提交运行 &#187;</button>
                                         <input type="hidden" id="bt" name="bt">
                                         <input type="hidden" id="code" name="code">
@@ -104,9 +102,9 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label><strong style="font-size: 16px;color: #617f10;">运行结果</strong></label>
-                                    <label class="pull-right"><strong style="font-size: 16px;color: #617f10; text-decoration: underline;">施塾-编程游乐场-HTML/JS/CSS</strong> </label>
+                                    <label class="pull-right"><strong style="font-size: 16px;color: #617f10; text-decoration: underline;">施塾-编程游乐场-{% if lang %} {{ lang }} {% endif %}</strong> </label>
                                     <div id="iframewrapper">
-
+                                        <iframe id="iframeResult" class="result_output" name="view"></iframe>
                                     </div>
                                 </div>
                             </div>

@@ -27,5 +27,5 @@ urlpatterns = [
     url(r'^html/', views.html, name='html'),
     url(r'^script/', views.script, name='script'),
     url(r'^parse/', views.parse, name='parse'),
-    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_FILES_ROOT})
+    url(r'^staticfiles/(?P<path>.*)$', serve, {'document_root': settings.STATIC_FILES_ROOT}, name="staticfiles"),
 ]

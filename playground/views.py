@@ -15,6 +15,10 @@ def html(request):
 
 def script(request):
     context = {}
+
+    if 'lang' in request.GET:
+        context['lang'] = request.GET['lang']
+
     return render(request, 'script.html', context)
 
 def parse(request):
@@ -42,6 +46,6 @@ def parse(request):
         result['result'] = BUILD_RUN_RESULT['FAIL']
         result['msg'] = 'Error: Language %s is not supported!' % lang
     else:
-        result = buildAndRun(lang, code)
+        result = parsers.buildAndRun(lang, code)
 
     return JsonResponse(result, safe=False)
