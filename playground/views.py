@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from . import parsers
 
-BUILD_RUN_RESULT = {'PASS': 'PASS', 'FAIL': 'FAIL', 'TIMEOUT': 'TIMEOUT'}
-LANGS_SUPPORTED = ['PYTHON', 'GO']
+BUILD_RUN_RESULT = {'PASS': 'PASS', 'FAIL': 'FAIL', 'COMPILE_FAIL': 'COMPILE_FAIL', 'TIMEOUT': 'TIMEOUT'}
+LANGS_SUPPORTED = ['PYTHON', 'GO', 'JAVA']
 
 def index(request):
     context = {}

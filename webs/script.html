@@ -15,6 +15,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/xml/xml.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/go/go.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/python/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/clike/clike.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/addon/edit/closetag.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.12.0/mode/addon/edit/closebrackets.min.js"></script>
     <!--[if lt IE 9]>
@@ -28,6 +29,13 @@
 			    {% if lang %}
 			        langParm = "{{ lang }}";
 			    {% endif %}
+
+			    var warning = '<div class="alert alert-danger alert-dismissable">'
+                                + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+                                + 'You must name your public class as "Hello"</div>';
+			    if (langParm == "JAVA") {
+                    $('#iframeResult').attr("srcdoc", warning);
+			    }
 
                 var editor_mode = "text/x-"+langParm.toLowerCase();
 
@@ -46,19 +54,23 @@
                     var text = editor.getValue();
 
                     $.getJSON('/parse/', {code: text, lang: langParm})
-                      .done(function(json) {
-                          var result = json['msg'];
-                          result = result.replace(/\r\n|\r|\n/g,"<br />");
-                          var html = '<div>' + json['result'] + '</div>';
-                          html += '<div>' + result + '</div>';
-                          $('#iframeResult').attr("srcdoc", html);
-                      })
-                      .fail(function(jqxhr, textStatus, error) {
-                          var html = '<div class="alert alert-danger alert-dismissable">'
-                              + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
-                              + 'load data failed: ' + textStatus + ', ' + error + '</div>';
-                          $('#iframeResult').attr("srcdoc", html);
-                      });
+                        .done(function(json) {
+                            var result = json['msg'];
+                            result = result.replace(/\r\n|\r|\n/g,"<br />");
+                            var html = '<div>' + json['result'] + '</div>';
+                            html += '<div>======</div>'
+                            html += '<div>' + result + '</div>';
+                            if ((json['result'] != 'PASS') && (langParm == "JAVA")) {
+                                html += warning;
+                            }
+                            $('#iframeResult').attr("srcdoc", html);
+                        })
+                        .fail(function(jqxhr, textStatus, error) {
+                            var html = '<div class="alert alert-danger alert-dismissable">'
+                                + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
+                                + 'Failed to access the service: ' + textStatus + ', ' + error + '</div>';
+                            $('#iframeResult').attr("srcdoc", html);
+                        });
 				});
 			});
 		</script>
