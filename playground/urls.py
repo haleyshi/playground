@@ -16,7 +16,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.views.static import serve
+from django.conf import settings
+
+from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', views.index, name='index'),
+    url(r'^html/', views.html, name='html'),
+    url(r'^script/', views.script, name='script'),
+    url(r'^parse/', views.parse, name='parse'),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_FILES_ROOT})
 ]
