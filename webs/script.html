@@ -68,9 +68,7 @@
                             $('#iframeResult').attr("srcdoc", html);
                         })
                         .fail(function(jqxhr, textStatus, error) {
-                            var html = '<div class="alert alert-danger alert-dismissable">'
-                                + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
-                                + 'Failed to access the service: ' + textStatus + ', ' + error + '</div>';
+                            var html = '<div>Failed to access the service: ' + textStatus + ', ' + error + '</div>';
                             $('#iframeResult').attr("srcdoc", html);
                         });
 				});
