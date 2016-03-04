@@ -33,11 +33,16 @@
 			    var warning = '<div class="alert alert-danger alert-dismissable">'
                                 + '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'
                                 + 'You must name your public class as "Hello"</div>';
-			    if (langParm == "JAVA") {
-                    $('#iframeResult').attr("srcdoc", warning);
-			    }
 
-                var editor_mode = "text/x-"+langParm.toLowerCase();
+			    var editor_mode = "text/x-"+langParm.toLowerCase();
+
+			    if (langParm == "JAVA") {
+                    $('#warning_div').html(warning);
+			    } else if (langParm == "C") {
+			        editor_mode= "text/x-csrc";
+			    } else if (langParm == "CPP") {
+			        editor_mode= "text/x-c++src";
+			    }
 
                 var editor = CodeMirror.fromTextArea(document.getElementById("ta_code"), {
                                                                                         mode: editor_mode,
@@ -60,9 +65,6 @@
                             var html = '<div>' + json['result'] + '</div>';
                             html += '<div>======</div>'
                             html += '<div>' + result + '</div>';
-                            if ((json['result'] != 'PASS') && (langParm == "JAVA")) {
-                                html += warning;
-                            }
                             $('#iframeResult').attr("srcdoc", html);
                         })
                         .fail(function(jqxhr, textStatus, error) {
@@ -97,7 +99,7 @@
 	</head>
 	<body>
         <div class="container" style="width:100%;height:100%;font-size:12px;">
-            <div class="row" style="min-height:90px"></div>
+            <div class="row" style="min-height:60px"></div>
             <div class="row" style="background-color: #e5eecc;">
                 <div class="panel panel-default" style="margin-bottom:0;">
                     <div class="panel-body" style="background-color: #e5eecc;border-color: #e5eecc;">
@@ -124,6 +126,8 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="min-height:5px"></div>
+            <div class="row" id="warning_div" style="width:50%;"></div>
         </div>
 	</body>
 </html>

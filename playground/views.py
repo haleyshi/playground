@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from . import parsers
 
 BUILD_RUN_RESULT = {'PASS': 'PASS', 'FAIL': 'FAIL', 'COMPILE_FAIL': 'COMPILE_FAIL', 'TIMEOUT': 'TIMEOUT'}
-LANGS_SUPPORTED = ['PYTHON', 'GO', 'JAVA']
+LANGS_SUPPORTED = ['PYTHON', 'GO', 'JAVA', 'C', 'CPP']
 
 def index(request):
     context = {}

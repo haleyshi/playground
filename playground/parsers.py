@@ -8,6 +8,10 @@ def buildAndRun(lang, code):
         return buildAndRunPython(code)
     elif lang == 'JAVA':
         return buildAndRunJava(code)
+    elif lang == 'C':
+        return buildAndRunC(code)
+    elif lang == 'CPP':
+        return buildAndRunCpp(code)
     else:
         return {'result': 'FAIL', 'msg': 'Error: Language %s is not supported' % lang}
 
@@ -81,6 +85,68 @@ def buildAndRunJava(code):
         result['msg'] = comp_output
 
     os.remove("Hello.java")
-    os.remove("Hello.class")
+
+    if os.path.isfile('Hello.class'):
+        os.remove("Hello.class")
+
+    return result
+
+
+def buildAndRunC(code):
+    result = {}
+
+    fo = open("code.c", "wb")
+    fo.write(code)
+    fo.close()
+
+    comp_cmd = 'gcc -o code code.c -Wall'
+    comp_status, comp_output = commands.getstatusoutput(comp_cmd)
+
+    if comp_status == 0:
+        run_cmd = './code'
+        run_status, run_output = commands.getstatusoutput(run_cmd)
+        if run_status == 0:
+            result['result'] = 'PASS'
+        else:
+            result['result'] = 'FAIL'
+        result['msg'] = run_output
+    else:
+        result['result'] = 'COMPILE_FAIL'
+        result['msg'] = comp_output
+
+    os.remove("code.c")
+
+    if os.path.isfile('code'):
+        os.remove("code")
+
+    return result
+
+
+def buildAndRunCpp(code):
+    result = {}
+
+    fo = open("code.cpp", "wb")
+    fo.write(code)
+    fo.close()
+
+    comp_cmd = 'g++ -o code code.cpp -Wall'
+    comp_status, comp_output = commands.getstatusoutput(comp_cmd)
+
+    if comp_status == 0:
+        run_cmd = './code'
+        run_status, run_output = commands.getstatusoutput(run_cmd)
+        if run_status == 0:
+            result['result'] = 'PASS'
+        else:
+            result['result'] = 'FAIL'
+        result['msg'] = run_output
+    else:
+        result['result'] = 'COMPILE_FAIL'
+        result['msg'] = comp_output
+
+    os.remove("code.cpp")
+
+    if os.path.isfile('code'):
+        os.remove("code")
 
     return result
